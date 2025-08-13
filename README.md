@@ -135,16 +135,17 @@ Develop a data-driven targeting approach for catalog marketing that:
 
 ----
 
-### Data Loading (Catalog Data)
+# Data Loading (Catalog Data)
 
-#### Load the data from the specified table in the catalog into a Spark DataFrame
-df_dm = spark.sql("SELECT * FROM Kartheek_Pipeline.Catalog_Data")
+# 1) Load the data into a Spark DataFrame
+df_dm = spark.sql("SELECT * FROM Kartheek_Pipeline.Catalog_Data")  # Read the full catalog table
 
-####  Display the DataFrame in a tabular view for quick inspection
-display(df_dm)
+# 2) Display a tabular preview for quick inspection
+display(df_dm)  # Shows the DataFrame in a grid view (Databricks/Fabric)
 
-####  Get the list of column names in the DataFrame
-df_dm.columns
+# 3) List all column names to review the schema
+df_dm.columns  # Returns a Python list of column names
+
 
 #### Code Explanation:
 
