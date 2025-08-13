@@ -29,9 +29,9 @@ Develop a data-driven targeting approach for catalog marketing that:
 
 
  2.Data Collection.
-We collected DM (customer master) and transaction data from the SSMS server and ingested them into the Lakehouse via the **kartheek_pipeline.** We then began data exploration to understand the spread of the data (distributions, ranges, counts, and outliers) across key fields before further modeling.
+- We collected DM (customer master) and transaction data from the SSMS server and ingested them into the Lakehouse via the **kartheek_pipeline.** We then began data exploration to understand the spread of the data (distributions, ranges, counts, and outliers) across key fields before further modeling.
 
-Data Exploration (DM Data)
+#### Data Exploration (DM Data)
 
 | Column Name            | Description |
 |------------------------|----------------------------------------------------------------|
@@ -68,7 +68,7 @@ Data Exploration (DM Data)
 
 
 
-Column Descriptions (Sales & Transaction)
+#### Column Descriptions (Sales & Transaction)
 
 | Column Name            | Description |
 |------------------------|-------------|
@@ -101,39 +101,39 @@ Column Descriptions (Sales & Transaction)
 
 
 
-### Installing All The Requirements:
+#### Installing All The Requirements:
 									
 													
-%pip install imbalanced-learn
+- %pip install imbalanced-learn
 
 
-%pip install imbalanced-learn is used to install the imbalanced-learn library, which provides tools to handle **imbalanced datasets**  (e.g., oversampling with SMOTE, undersampling, etc.) directly in your Python/Spark environment.
+- %pip install imbalanced-learn is used to install the imbalanced-learn library, which provides tools to handle **imbalanced datasets**  (e.g., oversampling with SMOTE, undersampling, etc.) directly in your Python/Spark environment.
 
 
 
 # --- Import all packages required---
-import re
-import os
-import math
-import warnings
-import logging
-import matplotlib.pyplot as plt
-from datetime import datetime
-from pyspark.sql import functions as F
-from pyspark.ml.feature import VectorAssembler
-from pyspark.ml import Pipeline as SparkPipeline
-from pyspark.sql.functions import col, when, ntile
-from pyspark.sql.window import Window
-from pyspark.ml.clustering import KMeans
-from pyspark.ml.evaluation import BinaryClassificationEvaluator
-from pyspark.ml.functions import vector_to_array
-from flaml.automl.spark.utils import to_pandas_on_spark
-import mlflow
-from mlflow.tracking import MlflowClient
-import flaml
-from flaml import AutoML
+- import re
+- import os
+- import math
+- import warnings
+- import logging
+- import matplotlib.pyplot as plt
+- from datetime import datetime
+- from pyspark.sql import functions as F
+- from pyspark.ml.feature import VectorAssembler
+- from pyspark.ml import Pipeline as SparkPipeline
+- from pyspark.sql.functions import col, when, ntile
+- from pyspark.sql.window import Window
+- from pyspark.ml.clustering import KMeans
+- from pyspark.ml.evaluation import BinaryClassificationEvaluator
+- from pyspark.ml.functions import vector_to_array
+- from flaml.automl.spark.utils import to_pandas_on_spark
+- import mlflow
+- from mlflow.tracking import MlflowClient
+- import flaml
+- from flaml import AutoML
 
------------------------
+----
 
 ### Data Loading (Catalog Data)
 
