@@ -143,7 +143,7 @@
 		
 		# Get the list of column names in the DataFrame
 		df_dm.columns
-# Code Explanation:
+#### Code Explanation:
 This code reads the Catalog_Data table into Spark, shows the data for review, and lists all its column names for reference.
 	
 	### Data Loading (Sales)
