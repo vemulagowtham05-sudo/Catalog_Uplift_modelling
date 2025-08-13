@@ -153,33 +153,31 @@ This code reads the Catalog_Data table into Spark, shows the data for review, an
 ---
 
 
-### Data Loading (Sales)
+#### Data Loading (Sales)
 
-# Parameters Setup
+#### Parameters Setup
 
-# Name of the database table containing all customers' sales data
+#### Name of the database table containing all customers' sales data
 db_sales = "Kartheek_Pipeline.sales_allcustomers"
 
-# Get today's date in YYYYMMDD format to append to table names (ensures unique table names each day)
+#### Get today's date in YYYYMMDD format to append to table names (ensures unique table names each day)
 today_str = datetime.today().strftime('%Y%m%d')
 
-# Name for the scored output table (stores predicted propensity scores)
+#### Name for the scored output table (stores predicted propensity scores)
 scored_table_name = f"salesData.Scored_Propensity_{today_str}"
 
-# Name for the clustered output table (stores clustered customer segments)
+#### Name for the clustered output table (stores clustered customer segments)
 clustered_table_name = f"salesData.ScoredClusteredAudience_{today_str}"
 
+#### Load Sales Data
 
-# -------------------------------------
-# Load Sales Data
-
-# Read the sales data from the specified database table into a Spark DataFrame
+#### Read the sales data from the specified database table into a Spark DataFrame
 df_sales = spark.sql(f"SELECT * FROM {db_sales}")
 
-# Display the loaded DataFrame in the notebook for inspection
+#### Display the loaded DataFrame in the notebook for inspection
 display(df_sales)
 
-# Retrieve and display the list of column names from the sales DataFrame
+#### Retrieve and display the list of column names from the sales DataFrame
 df_sales.columns
 
 ### Code Explanation:
@@ -243,16 +241,16 @@ simple_eda(df_valid)
 
  ---------------------------
 
-# Print all column names in the DataFrame for inspection
+#### Print all column names in the DataFrame for inspection
 print(df_valid.columns)
 
-# Count the number of unique customers based on 'Gold_Cust_ID'
+#### Count the number of unique customers based on 'Gold_Cust_ID'
 num_customers = df_valid.select("Gold_Cust_ID").distinct().count()
 
-# Display the number of distinct customers in the DataFrame
+#### Display the number of distinct customers in the DataFrame
 print(f"Number of distinct customers in df_scored: {num_customers}")
 
-### Code Explanation
+#### Code Explanation
 
 1. `print(df_valid.columns)`  
    - Prints all column names in the DataFrame `df_valid` as a Python list.  
@@ -275,11 +273,11 @@ print(f"Number of distinct customers in df_scored: {num_customers}")
 
 -------------------------------------
 
-# Save df_valid as a managed table
+#### Save df_valid as a managed table
 df_valid.write.mode("overwrite").saveAsTable("Kartheek_Pipeline.Catalog_Universe_with_Sales")
 
 
-### Code Explanation
+#### Code Explanation
 - **Purpose:** Saves the DataFrame `df_valid` as a **managed Delta table** in the metastore.  
 - **`write.mode("overwrite")`** → Overwrites the table if it already exists.  
 - **`saveAsTable("Kartheek_Pipeline.Catalog_Universe_with_Sales")`** → Creates or replaces a managed table with the given name in the `Kartheek_Pipeline` schema.
@@ -287,11 +285,11 @@ df_valid.write.mode("overwrite").saveAsTable("Kartheek_Pipeline.Catalog_Universe
 -------------------------------------------------------------------
 
 
-### 4.Feature Engineering – Catalog Segmentation
+#### 4.Feature Engineering – Catalog Segmentation
 
 ####  Creating the tables For B2C (Catalog Consumers)
 
-### Code Explanation
+#### Code Explanation
 1. `df = spark.sql("SELECT * FROM Kartheek_Pipeline.catalog_universe_with_sales")`  
    - Runs a Spark SQL query to select all records from the `Kartheek_Pipeline.catalog_universe_with_sales` table.  
    - Loads the result into a DataFrame called `df`.
@@ -299,13 +297,13 @@ df_valid.write.mode("overwrite").saveAsTable("Kartheek_Pipeline.Catalog_Universe
 ----------------------------------------------------
 
 
-# Filtering the Cons Column 
+#### Filtering the Cons Column 
 from pyspark.sql.functions import col, lower
 df_cat = df.filter(col("MP_CAT_TYPE") == "catalog")
 df_cons = df_cat.filter(lower(col("customer_type")) == "cons")
 display(df_cons)
 
-### Code Explanation – Filtering Consumers from Sales Universe Data
+#### Code Explanation – Filtering Consumers from Sales Universe Data
 - First, the data is filtered to include only records where the mailing type is **Catalog**.  
 - Then, from this subset, only **consumer (B2C)** customers are selected based on the `customer_type` column.  
 - The result is a dataset containing only catalog records for consumer customers.
@@ -313,7 +311,7 @@ display(df_cons)
 -----------------------------------------------
 from pyspark.sql import functions as F
 
-# Group the DataFrame by customer, transaction, and mailing-related columns
+#### Group the DataFrame by customer, transaction, and mailing-related columns
 grouped_df = df.groupBy(
     "Gold_Cust_ID", "Cust_ID", "Src_Sys_Nm", "Cust_Combine_Id", "Zip5",
     "nt_call_ct", "rtl_call_rec", "business_ind", "customer_type",
@@ -355,7 +353,7 @@ grouped_df = df.groupBy(
 )
 
 
-### Code Explanation – Grouping and Aggregation
+#### Code Explanation – Grouping and Aggregation
 - **Purpose:** Summarize transaction and customer data by grouping on customer, store, and mailing-related fields.
 - **Aggregations performed:**
   - **Sum:** Calculates total sales quantities, checkout sales, product margins, landed margins, and total quantity.
@@ -371,14 +369,14 @@ from pyspark.sql.functions import (
     to_date, col, datediff, mean, stddev, countDistinct, sum, max, first
 )
 
-# 1. Ensure date formats
+#### 1. Ensure date formats
 df_cons = df_cons.withColumn("tran_dt", to_date("tran_dt", "dd-MM-yyyy"))
 df_cons = df_cons.withColumn("Mailed_Date", to_date("Mailed_Date", "dd-MM-yyyy"))
 
-# 2. Filter only transactions that occurred BEFORE the mail date
+#### 2. Filter only transactions that occurred BEFORE the mail date
 df_pre_mail = df_cons.filter(col("tran_dt") < col("Mailed_Date"))
 
-# 3. Aggregate RFM features per customer
+#### 3. Aggregate RFM features per customer
 rfm_df = df_pre_mail.groupBy("Gold_Cust_ID").agg(
     max("tran_dt").alias("last_transaction_date"),
     countDistinct("Tran_Id").alias("Frequency"),
@@ -386,10 +384,10 @@ rfm_df = df_pre_mail.groupBy("Gold_Cust_ID").agg(
     first("Mailed_Date").alias("Mailed_Date")  # Reference point for Recency
 )
 
-# 4. Compute Recency in days (Mail_Date - Last_Transaction)
+#### 4. Compute Recency in days (Mail_Date - Last_Transaction)
 rfm_df = rfm_df.withColumn("Recency", datediff(col("Mailed_Date"), col("last_transaction_date")))
 
-# 5. Compute mean and stddev for each RFM column
+#### 5. Compute mean and stddev for each RFM column
 stats = rfm_df.select(
     mean("Recency").alias("mean_rec"),
     stddev("Recency").alias("std_rec"),
@@ -399,25 +397,25 @@ stats = rfm_df.select(
     stddev("Monetary").alias("std_mon")
 ).collect()[0]
 
-# 6. Broadcast stats
+#### 6. Broadcast stats
 mean_rec, std_rec = stats["mean_rec"], stats["std_rec"]
 mean_freq, std_freq = stats["mean_freq"], stats["std_freq"]
 mean_mon, std_mon = stats["mean_mon"], stats["std_mon"]
 
-# 7. Add standardized z-scores
+#### 7. Add standardized z-scores
 rfm_df = rfm_df \
     .withColumn("Recency_Z", (mean_rec - col("Recency")) / std_rec) \
     .withColumn("Frequency_Z", (col("Frequency") - mean_freq) / std_freq) \
     .withColumn("Monetary_Z", (col("Monetary") - mean_mon) / std_mon) \
     .withColumn("RFM_Z_Composite", col("Recency_Z") + col("Frequency_Z") + col("Monetary_Z"))
 
-# 8. (Optional) View sample
+#### 8. (Optional) View sample
 rfm_df.select("Gold_Cust_ID", "Recency", "Frequency", "Monetary", 
               "Recency_Z", "Frequency_Z", "Monetary_Z", "RFM_Z_Composite").show(10)
 
 
 
-### Code Explanation – RFM Analysis
+#### Code Explanation – RFM Analysis
 
 1. **Convert Dates**  
    - Ensure `tran_dt` and `Mailed_Date` are in proper date format.
@@ -449,7 +447,7 @@ rfm_df.select("Gold_Cust_ID", "Recency", "Frequency", "Monetary",
 -----------------------------------
 
 
-# final_df will have all features + RFM z-scores
+#### final_df will have all features + RFM z-scores
 final_df = grouped_df.join(
     rfm_df.select("Gold_Cust_ID", "Recency", "Frequency", "Monetary",
                   "Recency_Z", "Frequency_Z", "Monetary_Z", "RFM_Z_Composite"),
@@ -458,7 +456,7 @@ final_df = grouped_df.join(
 )
 
 
-### Code Explanation - Joining RFM Scores to Main Dataset
+#### Code Explanation - Joining RFM Scores to Main Dataset
 
 - **Purpose**:  
   Add RFM metrics (`Recency`, `Frequency`, `Monetary`) and their standardized z-scores to the main customer dataset.
@@ -479,7 +477,7 @@ final_df = grouped_df.join(
 
 from pyspark.sql.functions import col, sqrt, pow, lit, when
 
-# Step 1: Normalize Pre and Post features
+#### Step 1: Normalize Pre and Post features
 final_df = final_df.withColumns({
     "PreDM_Sales_Rate": col("PreDM_Sales") / 90,
     "PreDM_Margin_Rate": col("PreDM_Margin") / 90,
@@ -492,7 +490,7 @@ final_df = final_df.withColumns({
     "Post_Transactions_Rate": col("Post_Transactions") / 30
 })
 
-# Step 2: Add SpendRate_Z and Response Flag
+#### Step 2: Add SpendRate_Z and Response Flag
 epsilon = 1e-6
 
 final_df = final_df.withColumn(
@@ -504,7 +502,7 @@ final_df = final_df.withColumn(
     when((col("SpendRate_Z") > 1.645) & (col("Group_Flag") == "Mailed"), 1).otherwise(0)
 )
 
-### Step 1: Normalize Pre and Post Campaign Metrics
+#### Step 1: Normalize Pre and Post Campaign Metrics
 - Creates **rate features** for both:
   - **Pre-campaign** (90 days)
   - **Post-campaign** (30 days)
@@ -512,7 +510,7 @@ final_df = final_df.withColumn(
   calculates **daily averages** by dividing totals by the number of days in each period.
 - This makes metrics **comparable** across periods, even if their time windows differ.
 
-### Step 2: Calculate `SpendRate_Z` and Response Flag
+#### Step 2: Calculate `SpendRate_Z` and Response Flag
 - **SpendRate_Z**:
   - Measures how much the **post-campaign sales rate** differs from the **pre-campaign sales rate**.
   - Adjusted for variability in margins (standard deviation).
@@ -525,14 +523,14 @@ final_df = final_df.withColumn(
 - Essentially flags customers **likely influenced** by the campaign..
 
 -----------
-###  Catalog B2C Created on Functions.
+####  Catalog B2C Created on Functions.
 
 def load_b2c():
     """Load and cache the B2C Delta table."""
     df = spark.read.format("delta").load("Tables/b2c_circulation_input_15pctz").cache()
     return df
 
-### Code Explanation
+#### Code Explanation
 - **spark.read.format("delta")**: Specifies that the data source format is **Delta Lake**.  
 - **.load("Tables/b2c_circulation_input_15pctz")**: Loads the Delta table from the given table path.  
 - **.cache()**: Caches the DataFrame in memory for faster repeated access during the pipeline.  
@@ -583,7 +581,7 @@ def eda_and_balance(df, target_col):
     return
 
 
-### Code Explanation
+#### Code Explanation
 - **Function Purpose**: Performs basic **Exploratory Data Analysis (EDA)** on the target column to check for **class imbalance** and visualize it.
 
 - **import matplotlib.pyplot as plt**: Imports Matplotlib for plotting graphs.  
@@ -621,7 +619,7 @@ def clean_and_split(df, target_col):
     return df, train_raw, test_raw
 
 
-### Code Explanation
+#### Code Explanation
 - **Function Purpose**: Cleans the input DataFrame's column names, removes empty columns, and splits the data into training and testing sets.
 
 - **import re**: Imports the regex module for string pattern matching and replacement.  
@@ -646,7 +644,7 @@ def clean_and_split(df, target_col):
 
 ----------
 
- # Import PySpark's Pipeline class (renamed to SparkPipeline to avoid confusion with scikit-learn Pipeline)
+ #### Import PySpark's Pipeline class (renamed to SparkPipeline to avoid confusion with scikit-learn Pipeline)
 def preprocess_and_impute(train_raw, test_raw):
     from pyspark.ml import Pipeline as SparkPipeline
 
@@ -661,7 +659,7 @@ def preprocess_and_impute(train_raw, test_raw):
     return train_raw, test_raw
 
 
-### Code Explanation
+#### Code Explanation
 - **Function Purpose**: Prepares the training and testing DataFrames by running them through a placeholder Spark ML pipeline and imputing missing values.
 
 - **from pyspark.ml import Pipeline as SparkPipeline**: Imports Spark's `Pipeline` class for structuring data processing steps.
@@ -719,7 +717,7 @@ def select_and_vectorize(df, train_raw, test_raw, target_col):
     return featurizer, feature_cols, train_data, test_data
 
 
-### Code Explanation
+#### Code Explanation
 - **Function Purpose**: Selects numeric feature columns and combines them into a single `features` vector for Spark ML model training.
 
 - **from pyspark.sql.types import ...**: Imports numeric Spark data types to filter for supported feature columns.  
@@ -780,7 +778,7 @@ def upsample(train_data, target_col):
     return train_data_bal
 
 
-### Code Explanation
+#### Code Explanation
 - **Function Purpose**: Balances the training dataset by **upsampling** the minority class (positive class) so that both classes have similar representation for model training.
 
 - **from pyspark.sql.functions import col**: Imports `col` to reference columns in PySpark filters.
@@ -804,7 +802,7 @@ def upsample(train_data, target_col):
 - **return train_data_bal**: Returns the balanced training DataFrame.
 
 
--------------------------------------
+----
 
 def flaml_training(train_data, test_data, target_col, mode):
     import os, flaml, mlflow
@@ -860,7 +858,7 @@ def flaml_training(train_data, test_data, target_col, mode):
     # Return trained AutoML object, experiment name, and test dataset
     return automl, auto_name, df_test
 
-### Code Explanation
+#### Code Explanation
 - **Function Purpose**: Trains an AutoML model using **FLAML** on Spark DataFrames, logs the process to **MLflow**, and prepares the test dataset for later evaluation.
 
 - **Imports**:  
@@ -925,7 +923,7 @@ def register_and_load_model(auto_name, mode):
     return spark_model
 
 
-### Code Explanation
+#### Code Explanation
 - **Function Purpose**: Finds the best AutoML run from MLflow, registers the model in the MLflow Model Registry, and loads it back for inference.
 
 - **from mlflow.tracking import MlflowClient**: Imports the MLflow client API to interact with experiments and runs.
@@ -993,11 +991,11 @@ def evaluate_test_set(spark_model, df_test, target_col):
     return spark_model
 
 
-### Code Explanation
+#### Code Explanation
 
 This function evaluates a trained Spark ML model on a test dataset and calculates key classification metrics.
 
-## Workflow
+#### Workflow
 1. **Convert Data**  
    Converts test data into a Spark DataFrame format for processing.
 
@@ -1023,7 +1021,7 @@ This function evaluates a trained Spark ML model on a test dataset and calculate
 7. **Display Results**  
    Prints all metrics and displays a sample of predictions with their probabilities.
 
-## Key Notes
+#### Key Notes
 - Uses a fixed threshold of 0.5 (can be adjusted for better performance).
 - PR AUC is especially valuable when dealing with class imbalance.
 - Outputs both numerical metrics and a preview of scored predictions.
@@ -1228,11 +1226,11 @@ def post_scoring_and_segments(df, featurizer, spark_model, target_col, mode):
     print(f"Saved with clusters & holdout to: {save_table_holdout}")
 
 
-# Function: `post_scoring_and_segments` — Explanation
+#### Function: `post_scoring_and_segments` — Explanation
 
 This function takes customer-level data, applies a trained model, and produces detailed segmentation, scoring, clustering, and holdout planning for campaign targeting.
 
-## Workflow Overview
+#### Workflow Overview
 
 1. **Feature Engineering & Model Scoring**
    - Transforms the input DataFrame using the provided `featurizer`.
@@ -1267,7 +1265,7 @@ This function takes customer-level data, applies a trained model, and produces d
    - Ensures minimum holdout sizes when event rate is zero.
    - Assigns customers to **mail** or **holdout** groups randomly within clusters.
 
-## Key Points
+#### Key Points
 - Combines model scores with RFM segmentation for nuanced ranking.
 - Produces both **individual-level** and **cluster-level** insights.
 - Assigns **marketing personas** for targeted messaging.
@@ -1296,13 +1294,13 @@ def pipeline(mode="b2c"):
     evaluate_test_set(spark_model, df_test, target_col)
     post_scoring_and_segments(df, featurizer, spark_model, target_col, mode)
 
-# Function: `pipeline` — Explanation
+#### Function: `pipeline` — Explanation
 
 This is the **main orchestration function** that executes the entire machine learning workflow for either **B2C** or **B2B** datasets (default: `"b2c"`). It sequentially calls all the modular functions to prepare data, train the model, evaluate performance, and produce actionable marketing outputs.
 
 ---
 
-## Step-by-Step Breakdown
+#### Step-by-Step Breakdown
 
 1. **Parameter Setup**
    - Defines the target column (`response_flag`) representing the binary classification label (1 = responded, 0 = did not respond).
@@ -1335,21 +1333,20 @@ This is the **main orchestration function** that executes the entire machine lea
 
 ---
 
-## Purpose
+#### Purpose
 - Serves as the **end-to-end execution entry point** for the marketing prediction pipeline.
 - Automatically handles **data prep → modeling → evaluation → segmentation → holdout planning** in one function call.
 
 --------------------------------------------------
-# Calling the pipeline (B2C)
+### Calling the pipeline (B2C)
 
 pipeline(mode='b2c')
 
 
 -------------------------------------------------
+### The B2B pipeline is identical to the B2C pipeline, with the only difference being that it loads the B2B dataset (`load_b2b()`) instead of the B2C dataset (`load_b2c()`).
 
-- The B2B pipeline is identical to the B2C pipeline, with the only difference being that it loads the B2B dataset (`load_b2b()`) instead of the B2C dataset (`load_b2c()`).
-
-# Calling the pipeline(B2B)
+#### Calling the pipeline(B2B)
 
 pipeline(mode='b2b')
 
