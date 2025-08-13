@@ -38,6 +38,7 @@ Data ingested from **SSMS** → **Lakehouse** via `kartheek_pipeline`.
 
 Schemas and column descriptions for DM & sales are detailed in the original workflow documentation.
 
+[[ssms]https://learn.microsoft.com/en-us/ssms/sql-server-management-studio-ssms](https://learn.microsoft.com/en-us/ssms/sql-server-management-studio-ssms)
 
 
 
