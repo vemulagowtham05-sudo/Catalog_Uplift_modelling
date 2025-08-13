@@ -202,6 +202,7 @@ df_sales.columns: Returns all column names, helpful for checking schema before f
 from pyspark.sql import functions as F
 
 def simple_eda(df):
+
     # 1. Shape info
     print("=== Shape ===")
     print(f"Rows: {df.count()}, Columns: {len(df.columns)}\n")
