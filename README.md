@@ -26,7 +26,9 @@
 	
 	2.Data Collection.
 	We collected DM (customer master) and transaction data from the SSMS server and ingested them into the Lakehouse via the **kartheek_pipeline.** We then began data exploration to understand the spread of the data (distributions, ranges, counts, and outliers) across key fields before further modeling.
-	
+
+ [![Copy Assistant](https://img.shields.io/badge/Copy%20Assistant-Microsoft%20Fabric-blue)](https://learn.microsoft.com/en-us/fabric/data-factory/tutorial-move-data-lakehouse-copy-assistant)
+
 	Data Exploration (DM Data)
 	
 	| Column Name            | Description |
