@@ -29,40 +29,40 @@
 
  [![Copy Assistant](https://img.shields.io/badge/Copy%20Assistant-Microsoft%20Fabric-blue)](https://learn.microsoft.com/en-us/fabric/data-factory/tutorial-move-data-lakehouse-copy-assistant)
 
-	Data Exploration (DM Data)
-	
-	| Column Name            | Description |
-	|------------------------|----------------------------------------------------------------|
-	| Cust_ID                | Unique identifier for the customer in the system. |
-	| Src_Sys_Nm             | Source system name from which the customer record originates (e.g., MCD). |
-	| Gold_Cust_ID           | Master or consolidated customer ID after deduplication. |
-	| Cust_Combine_Id        | Combined key with source prefix and customer ID for uniqueness. |
-	| Zip5                   | 5-digit ZIP code of the customer's address. |
-	| nt_call_ct             | Count of "NT" (possibly non-transactional) calls made to the customer. |
-	| rtl_call_rec           | Indicates whether retail calls were recorded (Y/N). |
-	| business_ind           | Indicator showing if the customer is a business account (e.g., RB2B). |
-	| customer_type          | Classification of the customer type (e.g., RB2B = Retail B2B). |
-	| tradearea_store        | Trade area store associated with the customer. |
-	| tradearea_store_dist   | Distance from customer's location to the trade area store. |
-	| Advantage              | Flag indicating participation in the "Advantage" program (Y/N). |
-	| MP_GAN                 | Marketing Program Global Account Number — links to campaign targeting. |
-	| Mailed_Date            | Date the marketing material or offer was mailed to the customer. |
-	| MPMAIL_IND             | Indicator if the customer was mailed (blank, 1, or 0). |
-	| MP_MKY                 | Marketing Program key — campaign identifier. |
-	| MP_CAT                 | Marketing program category code. |
-	| Managed                | Indicates if the customer is under managed account handling (Y/N). |
-	| MP_CAT_TYPE            | Description of marketing program category (e.g., Advantage). |
-	| Group_Flag             | Grouping flag used for campaign segmentation (e.g., Mailed). |
-	| Post_Sales             | Sales amount after the campaign mailing. |
-	| Post_Margin            | Margin amount after the campaign mailing. |
-	| Post_Units             | Units purchased after the campaign mailing. |
-	| Post_Transactions      | Number of transactions after the campaign mailing. |
-	| row_num                | Row sequence number (useful for deduplication logic). |
-	| PreDM_Sales            | Sales amount before the Direct Marketing (DM) campaign. |
-	| PreDM_Margin           | Margin amount before the DM campaign. |
-	| PreDM_Units            | Units purchased before the DM campaign. |
-	| PreDM_Transactions     | Number of transactions before the DM campaign. |
-	
+		Data Exploration (DM Data)
+		
+		| Column Name            | Description |
+		|------------------------|----------------------------------------------------------------|
+		| Cust_ID                | Unique identifier for the customer in the system. |
+		| Src_Sys_Nm             | Source system name from which the customer record originates (e.g., MCD). |
+		| Gold_Cust_ID           | Master or consolidated customer ID after deduplication. |
+		| Cust_Combine_Id        | Combined key with source prefix and customer ID for uniqueness. |
+		| Zip5                   | 5-digit ZIP code of the customer's address. |
+		| nt_call_ct             | Count of "NT" (possibly non-transactional) calls made to the customer. |
+		| rtl_call_rec           | Indicates whether retail calls were recorded (Y/N). |
+		| business_ind           | Indicator showing if the customer is a business account (e.g., RB2B). |
+		| customer_type          | Classification of the customer type (e.g., RB2B = Retail B2B). |
+		| tradearea_store        | Trade area store associated with the customer. |
+		| tradearea_store_dist   | Distance from customer's location to the trade area store. |
+		| Advantage              | Flag indicating participation in the "Advantage" program (Y/N). |
+		| MP_GAN                 | Marketing Program Global Account Number — links to campaign targeting. |
+		| Mailed_Date            | Date the marketing material or offer was mailed to the customer. |
+		| MPMAIL_IND             | Indicator if the customer was mailed (blank, 1, or 0). |
+		| MP_MKY                 | Marketing Program key — campaign identifier. |
+		| MP_CAT                 | Marketing program category code. |
+		| Managed                | Indicates if the customer is under managed account handling (Y/N). |
+		| MP_CAT_TYPE            | Description of marketing program category (e.g., Advantage). |
+		| Group_Flag             | Grouping flag used for campaign segmentation (e.g., Mailed). |
+		| Post_Sales             | Sales amount after the campaign mailing. |
+		| Post_Margin            | Margin amount after the campaign mailing. |
+		| Post_Units             | Units purchased after the campaign mailing. |
+		| Post_Transactions      | Number of transactions after the campaign mailing. |
+		| row_num                | Row sequence number (useful for deduplication logic). |
+		| PreDM_Sales            | Sales amount before the Direct Marketing (DM) campaign. |
+		| PreDM_Margin           | Margin amount before the DM campaign. |
+		| PreDM_Units            | Units purchased before the DM campaign. |
+		| PreDM_Transactions     | Number of transactions before the DM campaign. |
+		
 	
 	
 	
@@ -96,19 +96,17 @@
 	| class_code             | Numeric/class code for the product category. |
 	| subclass_code          | Numeric/subclass code for the subcategory. |
 	
-	
-	
-	
+----
 	### Installing All The Requirements:
-								
-												
+	
+	
 	%pip install imbalanced-learn
 	
 	
 	%pip install imbalanced-learn is used to install the imbalanced-learn library, which provides tools to handle **imbalanced datasets**  (e.g., oversampling with SMOTE, undersampling, etc.) directly in your Python/Spark environment.
 	
 	
-	
+----	
 		# --- Import all packages required---
 		import re
 		import os
