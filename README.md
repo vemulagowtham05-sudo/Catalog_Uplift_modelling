@@ -3,7 +3,6 @@
 [![Python](https://img.shields.io/badge/python-3.x-blue.svg)](https://www.python.org/)
 [![PySpark](https://img.shields.io/badge/pyspark-ML-orange)](https://spark.apache.org/)
 [![MLFlow](https://img.shields.io/badge/MLFlow-Tracking-success)](https://mlflow.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
 
