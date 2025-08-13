@@ -1,4 +1,4 @@
-# Catalog Uplift Modeling – Project Workflow
+# Catalog Uplift Modeling – Documentation
 
 [![Python](https://img.shields.io/badge/python-3.x-blue.svg)](https://www.python.org/)
 [![PySpark](https://img.shields.io/badge/pyspark-ML-orange)](https://spark.apache.org/)
