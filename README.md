@@ -96,7 +96,7 @@
 	| subclass_code          | Numeric/subclass code for the subcategory. |
 	
 ----
-	### Installing All The Requirements:
+	# Installing All The Requirements:
 	
 	
 	%pip install imbalanced-learn
@@ -106,7 +106,7 @@
 	
 	
 ----	
-		# --- Import all packages required---
+		# Import all packages required
 		import re
 		import os
 		import math
@@ -128,7 +128,9 @@
 		import flaml
 		from flaml import AutoML
 	
-	-----------------------
+	--
+
+ 
 	
 		# Data Loading (Catalog Data)
 		
@@ -144,7 +146,7 @@
 This code reads the Catalog_Data table into Spark, shows the data for review, and lists all its column names for reference.
 	------
  
-	### Data Loading (Sales)
+	# Data Loading (Sales)
 	
 	# Parameters Setup
 	
@@ -170,8 +172,7 @@ This code reads the Catalog_Data table into Spark, shows the data for review, an
 	display(df_sales)
 	
 	# Retrieve and display the list of column names from the sales DataFrame
-	df_sales.columns
-	
+	df_sales.columns	
  ### Code Explanation:
 	
 - db_sales: Points to your sales data source table in your Fabric catalog.
